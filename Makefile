@@ -8,7 +8,7 @@ export
 .PHONY: test test-integration run dev seed ui-build ui-check serve-restart ui-dev desktop tidy lint-go ci
 
 ## test: run the full Go suite (each test uses its own temp SQLite; no services)
-test:
+test: ui-check
 	go test $$(go list ./... | grep -v '/runs/')
 
 ## test-integration: agent tests that call the real claude CLI (needs TEMPLATE_PATH)
@@ -37,6 +37,9 @@ ci:
 ui-check:
 	@if [ ! -d internal/api/web/dist/assets ] && [ ! -d web/dist/assets ]; then \
 	  echo "UI assets missing — running make ui-build..."; \
+	  $(MAKE) ui-build; \
+	elif ! grep -q 'id="root"' internal/api/web/dist/index.html 2>/dev/null; then \
+	  echo "UI embed stale — running make ui-build..."; \
 	  $(MAKE) ui-build; \
 	fi
 

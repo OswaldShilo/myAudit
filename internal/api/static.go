@@ -61,8 +61,12 @@ func repoRoot() string {
 }
 
 func hasUIAssets(root string) bool {
-	info, err := os.Stat(filepath.Join(root, "assets"))
-	return err == nil && info.IsDir()
+	matches, err := filepath.Glob(filepath.Join(root, "assets", "index-*.js"))
+	if err != nil || len(matches) == 0 {
+		return false
+	}
+	data, err := os.ReadFile(filepath.Join(root, "index.html"))
+	return err == nil && strings.Contains(string(data), `id="root"`)
 }
 
 func spaFileServer(files http.FileSystem) http.Handler {

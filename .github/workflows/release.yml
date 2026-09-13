@@ -94,17 +94,25 @@ jobs:
           TARGET_TRIPLE: aarch64-apple-darwin
         run: ./scripts/build-sidecar.sh
 
-      - name: Build desktop bundle
+      - name: Build app bundle
         working-directory: desktop
         env:
-          CI: true
-        run: npx tauri build --target aarch64-apple-darwin
+          CI: false
+          TAURI_BUNDLER_DMG_IGNORE_CI: true
+        run: npx tauri build --target aarch64-apple-darwin --bundles app
 
       - name: Ad-hoc sign app bundle
         run: |
           APP="desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/macos/myAudit.app"
           codesign --force --deep --sign - "$APP"
           codesign --verify --deep --strict "$APP"
+
+      - name: Build DMG installer
+        working-directory: desktop
+        env:
+          CI: false
+          TAURI_BUNDLER_DMG_IGNORE_CI: true
+        run: npx tauri build --target aarch64-apple-darwin --bundles dmg
 
       - name: Package installer
         run: |
