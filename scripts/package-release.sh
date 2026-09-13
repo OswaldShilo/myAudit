@@ -8,6 +8,7 @@ TRIPLE="${3:?}"
 OUT="${4:-dist}"
 
 mkdir -p "$OUT"
+OUT_ABS="$(cd "$OUT" && pwd)"
 V="$VERSION"
 
 copy_one() {
@@ -22,14 +23,14 @@ case "$TRIPLE" in
   aarch64-apple-darwin)
     copy_one "$(find "$BUNDLE_DIR/dmg" -maxdepth 1 -name '*.dmg' 2>/dev/null | head -1)" "myAudit-${V}-macOS-AppleSilicon.dmg"
     if [ -d "$BUNDLE_DIR/macos/myAudit.app" ]; then
-      (cd "$BUNDLE_DIR/macos" && zip -qr "$OUT/myAudit-${V}-macOS-AppleSilicon.zip" myAudit.app)
+      (cd "$BUNDLE_DIR/macos" && zip -qr "$OUT_ABS/myAudit-${V}-macOS-AppleSilicon.zip" myAudit.app)
       echo "  myAudit-${V}-macOS-AppleSilicon.zip"
     fi
     ;;
   x86_64-apple-darwin)
     copy_one "$(find "$BUNDLE_DIR/dmg" -maxdepth 1 -name '*.dmg' 2>/dev/null | head -1)" "myAudit-${V}-macOS-Intel.dmg"
     if [ -d "$BUNDLE_DIR/macos/myAudit.app" ]; then
-      (cd "$BUNDLE_DIR/macos" && zip -qr "$OUT/myAudit-${V}-macOS-Intel.zip" myAudit.app)
+      (cd "$BUNDLE_DIR/macos" && zip -qr "$OUT_ABS/myAudit-${V}-macOS-Intel.zip" myAudit.app)
       echo "  myAudit-${V}-macOS-Intel.zip"
     fi
     ;;

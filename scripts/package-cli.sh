@@ -35,7 +35,8 @@ LABEL="$TRIPLE"
 ARCHIVE="myaudit-serve-${VERSION}-${LABEL}.tar.gz"
 case "$TRIPLE" in *windows*)
   ARCHIVE="myaudit-serve-${VERSION}-${LABEL}.zip"
-  (cd "$OUT" && zip -q "$ARCHIVE" "$BIN" && rm "$BIN")
+  powershell -NoProfile -Command "Compress-Archive -Path '$OUT/$BIN' -DestinationPath '$OUT/$ARCHIVE' -Force"
+  rm -f "$OUT/$BIN"
   ;;
 *)
   (cd "$OUT" && tar -czf "$ARCHIVE" "$BIN" && rm "$BIN")

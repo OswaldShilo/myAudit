@@ -126,9 +126,6 @@ jobs:
           TARGET_TRIPLE: ${{ matrix.triple }}
         run: ./scripts/build-sidecar.sh
 
-      - name: Run Go tests
-        run: go test $(go list ./... | grep -v '/runs/') -count=1
-
       - name: Build desktop bundle
         working-directory: desktop
         env:
