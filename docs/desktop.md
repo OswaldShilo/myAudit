@@ -48,7 +48,7 @@ git tag v0.2.0
 git push origin v0.2.0
 ```
 
-This triggers [`.github/workflows/release.yml`](../.github/workflows/release.yml) — desktop installers plus standalone CLI archives for macOS (arm64 + Intel), Linux x86_64, and Windows x86_64.
+This triggers [`.github/workflows/release.yml`](../.github/workflows/release.yml) — one macOS Apple Silicon `.dmg` per release.
 
 Preview build without tagging: **Actions → Release desktop app → Run workflow** (check **Publish** for a pre-release).
 

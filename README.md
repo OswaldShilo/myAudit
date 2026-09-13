@@ -4,26 +4,13 @@
 
 ## Download
 
-Pre-built installers for **macOS**, **Windows**, and **Linux** — no build tools required.
-
-| Platform | Download |
-|----------|----------|
-| **macOS** (Apple Silicon) | [Latest `.dmg`](https://github.com/codebyNJ/myAudit/releases/latest) → `myAudit-*-macOS-AppleSilicon.dmg` |
-| **macOS** (Intel) | [Latest `.dmg`](https://github.com/codebyNJ/myAudit/releases/latest) → `myAudit-*-macOS-Intel.dmg` |
-| **Windows** | [Latest `.exe`](https://github.com/codebyNJ/myAudit/releases/latest) → `myAudit-*-Windows-x86_64-setup.exe` |
-| **Linux** | [Latest `.AppImage`](https://github.com/codebyNJ/myAudit/releases/latest) → `myAudit-*-Linux-x86_64.AppImage` |
+**macOS (Apple Silicon)** — one `.dmg` per [release](https://github.com/codebyNJ/myAudit/releases/latest) (`myAudit-*-macOS.dmg`).
 
 ```bash
-# macOS / Linux one-liner
 curl -fsSL https://raw.githubusercontent.com/codebyNJ/myAudit/main/scripts/install.sh | bash
 ```
 
-```powershell
-# Windows (PowerShell)
-irm https://raw.githubusercontent.com/codebyNJ/myAudit/main/scripts/install.ps1 | iex
-```
-
-CLI-only server archives (`myaudit-serve-*`) are on the same [Releases](https://github.com/codebyNJ/myAudit/releases) page. Full details: [docs/downloads.md](docs/downloads.md).
+Manual install blocked with **“app is damaged”**? Run `xattr -cr /Applications/myAudit.app`. See [docs/downloads.md](docs/downloads.md).
 
 ---
 
@@ -190,8 +177,8 @@ styling; without a GUI session that step fails and you get an `.app` but no
 
 CI does the same on every tagged push. `.github/workflows/ci.yml` runs `go vet`,
 the Go test suite and the web typecheck/build on pushes and PRs to `main`.
-`.github/workflows/release.yml` builds installers for macOS (Apple Silicon and
-Intel), Linux x86_64 and Windows x86_64, then attaches them to a GitHub Release.
+`.github/workflows/release.yml` builds a single macOS Apple Silicon `.dmg` and
+attaches it to a GitHub Release.
 
 Cut a release by tagging — the tag is the single source of truth for the version,
 and it is stamped into `tauri.conf.json`, `Cargo.toml` and `desktop/package.json`

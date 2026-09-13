@@ -8,7 +8,6 @@ TRIPLE="${3:?}"
 OUT="${4:-dist}"
 
 mkdir -p "$OUT"
-OUT_ABS="$(cd "$OUT" && pwd)"
 V="$VERSION"
 
 copy_one() {
@@ -21,32 +20,10 @@ copy_one() {
 
 case "$TRIPLE" in
   aarch64-apple-darwin)
-    copy_one "$(find "$BUNDLE_DIR/dmg" -maxdepth 1 -name '*.dmg' 2>/dev/null | head -1)" "myAudit-${V}-macOS-AppleSilicon.dmg"
-    if [ -d "$BUNDLE_DIR/macos/myAudit.app" ]; then
-      (cd "$BUNDLE_DIR/macos" && zip -qr "$OUT_ABS/myAudit-${V}-macOS-AppleSilicon.zip" myAudit.app)
-      echo "  myAudit-${V}-macOS-AppleSilicon.zip"
-    fi
-    ;;
-  x86_64-apple-darwin)
-    copy_one "$(find "$BUNDLE_DIR/dmg" -maxdepth 1 -name '*.dmg' 2>/dev/null | head -1)" "myAudit-${V}-macOS-Intel.dmg"
-    if [ -d "$BUNDLE_DIR/macos/myAudit.app" ]; then
-      (cd "$BUNDLE_DIR/macos" && zip -qr "$OUT_ABS/myAudit-${V}-macOS-Intel.zip" myAudit.app)
-      echo "  myAudit-${V}-macOS-Intel.zip"
-    fi
-    ;;
-  x86_64-unknown-linux-gnu)
-    copy_one "$(find "$BUNDLE_DIR/appimage" -maxdepth 1 -name '*.AppImage' 2>/dev/null | head -1)" "myAudit-${V}-Linux-x86_64.AppImage"
-    copy_one "$(find "$BUNDLE_DIR/deb" -maxdepth 1 -name '*.deb' 2>/dev/null | head -1)" "myAudit-${V}-Linux-x86_64.deb"
-    copy_one "$(find "$BUNDLE_DIR/rpm" -maxdepth 1 -name '*.rpm' 2>/dev/null | head -1)" "myAudit-${V}-Linux-x86_64.rpm"
-    ;;
-  x86_64-pc-windows-msvc)
-    WIN_EXE="$(find "$BUNDLE_DIR/nsis" -maxdepth 1 -name '*-setup.exe' 2>/dev/null | head -1)"
-    [ -z "$WIN_EXE" ] && WIN_EXE="$(find "$BUNDLE_DIR/nsis" -maxdepth 1 -name '*.exe' 2>/dev/null | head -1)"
-    copy_one "$WIN_EXE" "myAudit-${V}-Windows-x86_64-setup.exe"
-    copy_one "$(find "$BUNDLE_DIR/msi" -maxdepth 1 -name '*.msi' 2>/dev/null | head -1)" "myAudit-${V}-Windows-x86_64.msi"
+    copy_one "$(find "$BUNDLE_DIR/dmg" -maxdepth 1 -name '*.dmg' 2>/dev/null | head -1)" "myAudit-${V}-macOS.dmg"
     ;;
   *)
-    echo "unknown triple: $TRIPLE" >&2
+    echo "unknown triple: $TRIPLE (releases are macOS Apple Silicon only)" >&2
     exit 1
     ;;
 esac
