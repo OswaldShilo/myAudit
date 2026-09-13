@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/codebyNJ/myAudit/internal/demo"
 	"github.com/codebyNJ/myAudit/internal/events"
 	"github.com/codebyNJ/myAudit/internal/sandbox"
 	"github.com/codebyNJ/myAudit/internal/store"
@@ -138,13 +139,9 @@ func NewMux(s *store.Store, static http.Handler) http.Handler {
 	})
 
 	mux.HandleFunc("GET /api/demo", func(w http.ResponseWriter, r *http.Request) {
-		p, err := filepath.Abs("demo")
+		p, err := demo.Dir()
 		if err != nil {
-			http.Error(w, "demo repo not found — run from the myAudit project root", 404)
-			return
-		}
-		if info, err := os.Stat(p); err != nil || !info.IsDir() {
-			http.Error(w, "demo repo not found — run from the myAudit project root", 404)
+			http.Error(w, "demo repo unavailable", 500)
 			return
 		}
 		writeJSON(w, map[string]string{"path": p})

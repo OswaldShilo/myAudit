@@ -29,5 +29,5 @@ jobs:
 
       - name: Run integration tests
         env:
-          TEMPLATE_PATH: ${{ inputs.template_path != '' && inputs.template_path || format('{0}/demo', github.workspace) }}
+          TEMPLATE_PATH: ${{ inputs.template_path != '' && inputs.template_path || format('{0}/internal/demo/fixture', github.workspace) }}
         run: make test-integration
