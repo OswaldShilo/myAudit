@@ -98,6 +98,9 @@ jobs:
         working-directory: desktop
         run: npx tauri build --target aarch64-apple-darwin --bundles app
 
+      - name: Install create-dmg
+        run: brew install create-dmg
+
       - name: Sign and package DMG
         run: |
           chmod +x scripts/codesign-macos-app.sh scripts/repack-dmg.sh
