@@ -56,11 +56,17 @@ rm -rf "$APP_DEST"
 cp -R "$MOUNT/myAudit.app" "$APP_DEST"
 hdiutil detach "$MOUNT" -quiet
 
-# Unsigned builds: clear quarantine so macOS does not show "app is damaged".
-xattr -cr "$APP_DEST"
-if command -v codesign >/dev/null; then
-  codesign --force --deep --sign - "$APP_DEST" 2>/dev/null || true
+# Unsigned builds: re-sign nested binaries, then clear quarantine.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -x "$SCRIPT_DIR/codesign-macos-app.sh" ]; then
+  "$SCRIPT_DIR/codesign-macos-app.sh" "$APP_DEST"
+else
+  codesign --force --sign - "$APP_DEST/Contents/MacOS/myaudit-serve"
+  codesign --force --sign - "$APP_DEST/Contents/MacOS/desktop"
+  codesign --force --sign - "$APP_DEST"
 fi
+xattr -cr "$APP_DEST"
 
 echo "==> installed. Open myAudit from Applications (or Spotlight)."
-echo "    If macOS still blocks launch: System Settings → Privacy & Security → Open Anyway"
+echo "    First launch: if macOS asks to confirm, choose Open."
+echo "    Or: System Settings → Privacy & Security → Open Anyway"

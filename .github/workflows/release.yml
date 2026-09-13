@@ -96,29 +96,14 @@ jobs:
 
       - name: Build app bundle
         working-directory: desktop
-        env:
-          CI: false
-          TAURI_BUNDLER_DMG_IGNORE_CI: true
         run: npx tauri build --target aarch64-apple-darwin --bundles app
 
-      - name: Ad-hoc sign app bundle
+      - name: Sign and package DMG
         run: |
+          chmod +x scripts/codesign-macos-app.sh scripts/repack-dmg.sh
           APP="desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/macos/myAudit.app"
-          codesign --force --deep --sign - "$APP"
-          codesign --verify --deep --strict "$APP"
-
-      - name: Build DMG installer
-        working-directory: desktop
-        env:
-          CI: false
-          TAURI_BUNDLER_DMG_IGNORE_CI: true
-        run: npx tauri build --target aarch64-apple-darwin --bundles dmg
-
-      - name: Package installer
-        run: |
-          chmod +x scripts/package-release.sh
-          B="desktop/src-tauri/target/aarch64-apple-darwin/release/bundle"
-          ./scripts/package-release.sh "${{ needs.version.outputs.version }}" "$B" aarch64-apple-darwin dist
+          ./scripts/codesign-macos-app.sh "$APP"
+          ./scripts/repack-dmg.sh "${{ needs.version.outputs.version }}" "$APP" dist
 
       - uses: actions/upload-artifact@v7
         with:

@@ -10,7 +10,7 @@
 curl -fsSL https://raw.githubusercontent.com/codebyNJ/myAudit/main/scripts/install.sh | bash
 ```
 
-Manual install blocked with **“app is damaged”**? Run `xattr -cr /Applications/myAudit.app`. See [docs/downloads.md](docs/downloads.md).
+Manual install blocked with **“app is damaged”**? See [docs/downloads.md](docs/downloads.md) — or run `bash scripts/install.sh` to install and fix signing automatically.
 
 ---
 

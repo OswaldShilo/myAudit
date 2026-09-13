@@ -14,11 +14,14 @@
 curl -fsSL https://raw.githubusercontent.com/codebyNJ/myAudit/main/scripts/install.sh | bash
 ```
 
-This downloads `myAudit-*-macOS.dmg`, copies the app to `/Applications`, and clears the macOS quarantine flag so you do not get **“app is damaged”**.
+This downloads `myAudit-*-macOS.dmg`, copies the app to `/Applications`, re-signs it, and clears quarantine so you do not get **“app is damaged”**.
 
 **Manual:** download the `.dmg`, drag **myAudit** to Applications, then run:
 
 ```bash
+codesign --force --sign - /Applications/myAudit.app/Contents/MacOS/myaudit-serve
+codesign --force --sign - /Applications/myAudit.app/Contents/MacOS/desktop
+codesign --force --sign - /Applications/myAudit.app
 xattr -cr /Applications/myAudit.app
 ```
 
