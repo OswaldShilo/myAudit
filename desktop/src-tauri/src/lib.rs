@@ -7,8 +7,27 @@ use tauri_plugin_shell::ShellExt;
 
 const PORT: u16 = 7788;
 
-
 struct Server(std::sync::Mutex<Option<CommandChild>>);
+
+/// GUI apps launched from Finder inherit a minimal PATH. Use the login shell PATH
+/// so git, claude, and opencode installed via Homebrew or ~/.local/bin are found.
+fn login_shell_path() -> Option<String> {
+    #[cfg(target_os = "macos")]
+    {
+        use std::process::Command;
+        let out = Command::new("/bin/bash")
+            .args(["-lc", "printf %s \"$PATH\""])
+            .output()
+            .ok()?;
+        if out.status.success() {
+            let path = String::from_utf8_lossy(&out.stdout).trim().to_string();
+            if !path.is_empty() {
+                return Some(path);
+            }
+        }
+    }
+    None
+}
 
 
 fn wait_for_server(timeout: Duration) -> bool {
@@ -37,14 +56,17 @@ pub fn run() {
                 let data_dir = app.path().app_data_dir()?;
                 std::fs::create_dir_all(&data_dir)?;
 
-                let (_rx, child) = app
+                let mut sidecar = app
                     .shell()
                     .sidecar("myaudit-serve")?
                     .env("PORT", PORT.to_string())
                     .env("MYAUDIT_DB", data_dir.join("myaudit.db").to_string_lossy().to_string())
                     .env("REAL_CLAUDE", "1")
-                    .current_dir(data_dir)
-                    .spawn()?;
+                    .current_dir(data_dir);
+                if let Some(path) = login_shell_path() {
+                    sidecar = sidecar.env("PATH", path);
+                }
+                let (_rx, child) = sidecar.spawn()?;
 
                 app.manage(Server(std::sync::Mutex::new(Some(child))));
             }

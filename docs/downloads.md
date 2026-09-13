@@ -29,7 +29,22 @@ If macOS still blocks launch: **System Settings → Privacy & Security → Open 
 
 Pin a version: `MYAUDIT_VERSION=v0.2.2 curl -fsSL ... | bash`
 
-After installing, launch **myAudit**. You still need **`claude`** or **`opencode`** logged in on your machine for live audits.
+After installing, launch **myAudit** from Applications.
+
+### Before your first audit
+
+The desktop app bundles the server, but **audits still use tools on your Mac**:
+
+| Tool | Why |
+|------|-----|
+| **`git`** | Snapshots and diffs the workspace |
+| **`claude`** or **`opencode`** | Runs the agent (must be logged in) |
+
+Install and log in from Terminal first (`claude login` or `opencode auth login`). The app inherits your login-shell `PATH` on launch, so Homebrew (`/opt/homebrew/bin`) and `~/.local/bin` CLIs are found even when you start myAudit from the Dock.
+
+If the home screen shows a health warning, fix the missing CLI in Terminal, then quit and reopen myAudit.
+
+Use **Import codebase → Browse…** in the desktop app to pick a folder (browser-only users paste an absolute path).
 
 ## Verify downloads
 

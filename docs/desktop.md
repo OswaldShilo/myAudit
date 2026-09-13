@@ -4,6 +4,8 @@
 
 The desktop app is a **Tauri 2** shell around the same Go server and React UI served at `http://localhost:7788`. Production installers bundle the server as a **sidecar** — no separate `make run` step for end users.
 
+The webview loads the UI from that local URL (not embedded assets). Tauri plugin access (folder picker, open-in-browser) is granted via [`capabilities/remote-localhost.json`](../desktop/src-tauri/capabilities/remote-localhost.json). On macOS, the sidecar inherits your **login-shell `PATH`** so `git`, `claude`, and `opencode` work when the app is launched from Finder.
+
 ## Development
 
 ```bash

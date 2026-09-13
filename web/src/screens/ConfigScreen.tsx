@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { FolderGit2, Sparkles, FolderSearch, Shield, Wallet } from 'lucide-react'
 import { useStore } from '../store'
-
-const tauriDialog = (): { open: (o: unknown) => Promise<string | null> } | undefined =>
-  (window as unknown as { __TAURI__?: { dialog?: { open: (o: unknown) => Promise<string | null> } } }).__TAURI__?.dialog
+import { isDesktopApp, pickFolder } from '../tauri'
 
 export function ConfigScreen() {
   const s = useStore()
@@ -12,13 +10,12 @@ export function ConfigScreen() {
   const [auditOnly, setAuditOnly] = useState(false)
   const [budget, setBudget] = useState('')
   const [busy, setBusy] = useState(false)
-  const dlg = tauriDialog()
+  const desktop = isDesktopApp()
 
   const browse = async () => {
-    if (!dlg) return
     try {
-      const picked = await dlg.open({ directory: true, multiple: false, title: 'Select a repository to audit' })
-      if (typeof picked === 'string') setRepo(picked)
+      const picked = await pickFolder()
+      if (picked) setRepo(picked)
     } catch (e) { s.toast('error', 'Folder picker failed', (e as Error).message) }
   }
 
@@ -55,14 +52,14 @@ export function ConfigScreen() {
             <div className="cfg-ico"><FolderGit2 size={16} /></div>
             <div className="cfg-text"><div className="cfg-title">Local path</div><div className="cfg-desc">Absolute path to the repo to audit</div></div>
             <div className="cfg-ctrl" style={{ display: 'flex', gap: 8 }}>
-              <input className="form-input" style={{ width: dlg ? 250 : 340 }} value={repo} onChange={(e) => setRepo(e.target.value)}
+              <input className="form-input" style={{ width: desktop ? 250 : 340 }} value={repo} onChange={(e) => setRepo(e.target.value)}
                 placeholder="/Users/you/code/my-project"
                 onKeyDown={(e) => { if (e.key === 'Enter') start() }} />
-              {dlg && <button className="btn-sm" style={{ flex: 'none' }} onClick={browse} title="Choose a folder"><FolderSearch size={13} /> Browse…</button>}
+              {desktop && <button className="btn-sm" style={{ flex: 'none' }} onClick={browse} title="Choose a folder"><FolderSearch size={13} /> Browse…</button>}
             </div>
           </div>
           {pathError && <div className="cfg-item"><div className="cfg-ico" /><div style={{ color: 'var(--method-del)', fontSize: 12 }}>{pathError}</div></div>}
-          {!dlg && <div className="cfg-item"><div className="cfg-ico" /><div style={{ color: 'var(--text-muted)', fontSize: 12 }}>Tip: folder-browse is available in the desktop app; in the browser, paste an absolute path.</div></div>}
+          {!desktop && <div className="cfg-item"><div className="cfg-ico" /><div style={{ color: 'var(--text-muted)', fontSize: 12 }}>Tip: folder-browse is available in the desktop app; in the browser, paste an absolute path.</div></div>}
           <div className="cfg-item">
             <div className="cfg-ico"><Sparkles size={16} /></div>
             <div className="cfg-text"><div className="cfg-title">Name (optional)</div><div className="cfg-desc">Defaults to the folder name</div></div>

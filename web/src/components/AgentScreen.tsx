@@ -4,15 +4,7 @@ import { Maximize2, Minimize2, Radio, Camera, MonitorPlay, ExternalLink, RotateC
 import { useStore } from '../store'
 import { api, type LiveView } from '../api'
 import { viewportWidth, withPath, type ViewportSize } from './util'
-
-const tauriOpener = (): { openUrl: (url: string) => Promise<void> } | undefined =>
-  (window as unknown as { __TAURI__?: { opener?: { openUrl: (url: string) => Promise<void> } } }).__TAURI__?.opener
-
-function openExternal(url: string) {
-  const opener = tauriOpener()
-  if (opener) { opener.openUrl(url).catch(() => {}); return }
-  window.open(url, '_blank', 'noopener,noreferrer')
-}
+import { openExternal } from '../tauri'
 
 function fmtAgo(iso?: string) {
   if (!iso) return ''
