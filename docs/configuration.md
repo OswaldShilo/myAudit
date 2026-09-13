@@ -31,7 +31,7 @@ Resolution order for provider: `AGENT_PROVIDER` env → SQLite `agent_provider` 
 |-----|--------|---------|
 | `agent_provider` | `claude`, `opencode` | Active CLI harness |
 | `model_tier` | `haiku-4.5`, `sonnet-5`, `opus-4.8` | Claude model (when provider is Claude) |
-| `opencode_model` | e.g. `anthropic/claude-haiku-4-5` | OpenCode model string |
+| `opencode_model` | e.g. `opencode/big-pickle` | OpenCode model string (free models recommended) |
 
 Env overrides always win over settings for provider and model.
 

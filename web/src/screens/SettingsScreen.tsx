@@ -4,11 +4,29 @@ import { api } from '../api'
 
 type Provider = 'claude' | 'opencode'
 
+const defaultOpenCodeModel = 'opencode/big-pickle'
+const legacyOpenCodeModel = 'anthropic/claude-haiku-4-5'
+
+const opencodeModels = [
+  { id: 'opencode/big-pickle', label: 'Big Pickle — free default' },
+  { id: 'opencode/nemotron-3.5-lightning-free', label: 'Nemotron 3.5 Lightning — free' },
+  { id: 'opencode/nemotron-3-ultra-free', label: 'Nemotron 3 Ultra — free' },
+  { id: 'opencode/mimo-v2.5-free', label: 'MiMo v2.5 — free' },
+  { id: 'opencode/ling-3.0-flash-fin-free', label: 'Ling 3.0 Flash — free' },
+  { id: 'opencode/muse-spark-1.3-contributor-free', label: 'Muse Spark 1.3 — free' },
+  { id: 'opencode/muse-spark-1.2-contributor-free', label: 'Muse Spark 1.2 — free' },
+] as const
+
+function normalizeOpenCodeModel(m: string | undefined) {
+  if (!m || m === legacyOpenCodeModel) return defaultOpenCodeModel
+  return m
+}
+
 export function SettingsScreen() {
   const s = useStore()
   const [provider, setProvider] = useState<Provider>('claude')
   const [tier, setTier] = useState('haiku-4.5')
-  const [opencodeModel, setOpencodeModel] = useState('anthropic/claude-haiku-4-5')
+  const [opencodeModel, setOpencodeModel] = useState(defaultOpenCodeModel)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -16,7 +34,7 @@ export function SettingsScreen() {
       const p = (st.agent_provider as string) || 'claude'
       if (p === 'claude' || p === 'opencode') setProvider(p)
       setTier((st.model_tier as string) || 'haiku-4.5')
-      setOpencodeModel((st.opencode_model as string) || 'anthropic/claude-haiku-4-5')
+      setOpencodeModel(normalizeOpenCodeModel(st.opencode_model as string))
     }).catch(() => {})
   }, [])
 
@@ -71,16 +89,18 @@ export function SettingsScreen() {
           </>
         ) : (
           <>
-            <label style={{ display: 'block', fontSize: 13, marginBottom: 6 }}>OpenCode model (<code>provider/model</code>)</label>
-            <input
-              className="set-select"
-              style={{ width: '100%', boxSizing: 'border-box' }}
-              value={opencodeModel}
-              onChange={(e) => setOpencodeModel(e.target.value)}
-              placeholder="anthropic/claude-haiku-4-5"
-            />
+            <label style={{ display: 'block', fontSize: 13, marginBottom: 6 }}>OpenCode model</label>
+            <select className="set-select" style={{ width: '100%' }} value={opencodeModel} onChange={(e) => setOpencodeModel(e.target.value)}>
+              {opencodeModels.map((m) => (
+                <option key={m.id} value={m.id}>{m.label}</option>
+              ))}
+              {!opencodeModels.some((m) => m.id === opencodeModel) && (
+                <option value={opencodeModel}>{opencodeModel}</option>
+              )}
+            </select>
             <p style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
-              A <code>OPENCODE_MODEL</code> environment variable, if set, overrides this.
+              Free OpenCode models only — Anthropic models via OpenCode need separate API billing.
+              Set <code>OPENCODE_MODEL</code> to use another model (e.g. a paid provider).
             </p>
           </>
         )}

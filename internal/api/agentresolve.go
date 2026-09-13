@@ -19,7 +19,8 @@ var tierToModel = map[string]string{
 
 const (
 	defaultModel         = "claude-haiku-4-5-20251001"
-	defaultOpenCodeModel = "anthropic/claude-haiku-4-5"
+	defaultOpenCodeModel = "opencode/big-pickle"
+	legacyOpenCodeModel  = "anthropic/claude-haiku-4-5" // broken via OpenCode; migrate to default
 )
 
 func resolveProvider(ctx context.Context, s *store.Store) string {
@@ -54,16 +55,23 @@ func resolveModel(ctx context.Context, s *store.Store) string {
 
 func resolveOpenCodeModel(ctx context.Context, s *store.Store) string {
 	if m := os.Getenv("OPENCODE_MODEL"); m != "" {
-		return m
+		return migrateOpenCodeModel(m)
 	}
 	if s != nil {
 		if st, err := s.GetSettings(ctx); err == nil {
 			if m, _ := st["opencode_model"].(string); m != "" {
-				return m
+				return migrateOpenCodeModel(m)
 			}
 		}
 	}
 	return defaultOpenCodeModel
+}
+
+func migrateOpenCodeModel(m string) string {
+	if m == legacyOpenCodeModel {
+		return defaultOpenCodeModel
+	}
+	return m
 }
 
 func runAgent(

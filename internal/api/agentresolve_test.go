@@ -47,3 +47,17 @@ func TestResolveOpenCodeModel(t *testing.T) {
 		t.Fatalf("env must override settings, got %s", m)
 	}
 }
+
+func TestMigrateOpenCodeModel(t *testing.T) {
+	ctx := context.Background()
+	s := newStore(t)
+	defer s.Close()
+
+	if _, err := s.PutSettings(ctx, map[string]any{"opencode_model": legacyOpenCodeModel}); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("OPENCODE_MODEL", "")
+	if m := resolveOpenCodeModel(ctx, s); m != defaultOpenCodeModel {
+		t.Fatalf("legacy haiku model should migrate to %s, got %s", defaultOpenCodeModel, m)
+	}
+}

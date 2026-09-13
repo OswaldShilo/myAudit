@@ -5,6 +5,16 @@ export type EventRow = { ts: string; kind: string; level: string; msg: string; n
 export type Checkpoint = { id: string; run_id: string; node_id: string; question: string; resolved: boolean; answer: string }
 export type FileEntry = { path: string; content?: string; action?: string; changed?: boolean; review?: string }
 export type RunDetail = { run: Run; nodes: Node[]; events: EventRow[]; checkpoints: Checkpoint[]; files: FileEntry[]; cost_usd: number }
+
+function normalizeRunDetail(d: RunDetail): RunDetail {
+  return {
+    ...d,
+    nodes: d.nodes ?? [],
+    events: d.events ?? [],
+    checkpoints: d.checkpoints ?? [],
+    files: d.files ?? [],
+  }
+}
 export type NodeCard = { id: string; type: string; name: string; status: string; deps: number; attempts: number; summary: string; files: number; cost_usd: number; events: number; created_at: string; claimed_at?: string; title?: string; file?: string; severity?: string; priority?: string; detail?: string; tags?: string[] }
 export type CreateRunBody = { repo_path: string; project?: string; audit_only?: boolean; budget_usd?: number }
 export type SearchHit = { path: string; line: number; text: string }
@@ -40,12 +50,12 @@ export const api = {
     message: string
   }>('/api/health'),
   listRuns: () => req<Run[]>('/api/runs'),
-  runDetail: (id: string) => req<RunDetail>('/api/runs/' + id),
+  runDetail: (id: string) => req<RunDetail>('/api/runs/' + id).then(normalizeRunDetail),
   createRun: (body: CreateRunBody) =>
     req<{ id: string }>('/api/runs', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
   resolveCheckpoint: (id: string, answer: string) =>
     req<void>('/api/checkpoints/' + id + '/resolve', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ answer }) }),
-  board: (id: string) => req<NodeCard[]>('/api/runs/' + id + '/board'),
+  board: (id: string) => req<NodeCard[]>('/api/runs/' + id + '/board').then((c) => c ?? []),
   cancelRun: (id: string) => req<void>('/api/runs/' + id + '/cancel', { method: 'POST' }),
   fileContent: (id: string, path: string) => req<{ path: string; content: string }>('/api/runs/' + id + '/file?path=' + encodeURIComponent(path)),
   diff: (id: string, path: string) => req<{ path: string; diff: string }>('/api/runs/' + id + '/diff?path=' + encodeURIComponent(path)),

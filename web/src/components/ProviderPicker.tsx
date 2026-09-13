@@ -11,7 +11,10 @@ export function ProviderPicker({ onDone }: { onDone: () => void }) {
   const save = async () => {
     setSaving(true)
     try {
-      await api.putSettings({ agent_provider: provider })
+      await api.putSettings({
+        agent_provider: provider,
+        ...(provider === 'opencode' ? { opencode_model: 'opencode/big-pickle' } : {}),
+      })
       onDone()
     } catch {
       setSaving(false)

@@ -21,7 +21,7 @@ myAudit drives a local CLI agent harness for QA and dev-fix nodes.
 
 **Claude** — `model_tier` in settings (`haiku-4.5`, `sonnet-5`, `opus-4.8`), overridden by `CLAUDE_MODEL`.
 
-**OpenCode** — `opencode_model` in settings (e.g. `anthropic/claude-haiku-4-5`), overridden by `OPENCODE_MODEL`.
+**OpenCode** — `opencode_model` in settings (default `opencode/big-pickle`, a free model), overridden by `OPENCODE_MODEL`. Run `opencode models` to list available models on your machine.
 
 ## Mode mapping
 
@@ -56,7 +56,7 @@ AGENT_PROVIDER=opencode
 CLAUDE_BIN=claude
 OPENCODE_BIN=opencode
 CLAUDE_MODEL=claude-sonnet-5
-OPENCODE_MODEL=anthropic/claude-haiku-4-5
+OPENCODE_MODEL=opencode/big-pickle
 ```
 
 ## See also

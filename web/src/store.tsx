@@ -111,7 +111,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const previewDoneCounts = useRef<Record<string, number>>({})
   useEffect(() => {
     if (!runId || !detail) return
-    const doneCount = detail.nodes.filter((n) => n.status === 'done').length
+    const doneCount = (detail.nodes ?? []).filter((n) => n.status === 'done').length
     const prev = previewDoneCounts.current[runId] ?? -1
     if (shouldRetryPreview(prev, doneCount)) {
       previewDoneCounts.current[runId] = doneCount

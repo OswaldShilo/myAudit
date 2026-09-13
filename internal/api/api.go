@@ -54,6 +54,9 @@ func NewMux(s *store.Store, static http.Handler) http.Handler {
 			http.Error(w, err.Error(), 500)
 			return
 		}
+		if nodes == nil {
+			nodes = []store.Node{}
+		}
 
 		evLimit := 200
 		if n, err := strconv.Atoi(r.URL.Query().Get("events")); err == nil && n > 0 {
@@ -64,10 +67,16 @@ func NewMux(s *store.Store, static http.Handler) http.Handler {
 			http.Error(w, err.Error(), 500)
 			return
 		}
+		if events == nil {
+			events = []store.EventRow{}
+		}
 		checkpoints, err := s.OpenCheckpointsForRun(r.Context(), id)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 			return
+		}
+		if checkpoints == nil {
+			checkpoints = []store.Checkpoint{}
 		}
 
 		changed, err := s.ChangedFilesForRun(r.Context(), id)
